@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<div id="control-bar-container">
+    <label>
+        Nb rows
+        <input name="nbRows" type="number"  onChange="handleOnChangeNbRows(this.value)"/>
+    </label>
+
+    <label>
+        Nb columns
+        <input name="nbCols" type="number" onChange="handleOnChangeNbCols(this.value)"/>
+    </label>
+    <button type="submit" onClick="handleOnClickGenerate()">Generate</button>
+</div>
+
+<div id="view-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script type="text/javascript" src="./utils/helper.js"></script>
+<script>
+    // declaration of functions used in <div id="control-bar-container">
+    let nbCols=8;
+    let nbRows=8;
+    let genData = genGridData(nbRows, nbCols);
+    function handleOnClickGenerate(){
+        genData = genGridData(nbRows,nbCols);
+        removeMatrix();
+        renderMatrix(genData);
+    }
+    function handleOnChangeNbRows(val){
+        nbRows=val;
+    }
+    function handleOnChangeNbCols(val){
+        nbCols=val;
+    }
+
+    const viewSize = {width: 1400, height: 750};
+    const margin = {top: 100, right: 5, bottom: 5, left: 100};
+    let matSvg;
+    let matSvgG;
+    const cellSize = 50;
+    const cellMargin = 10;
+
+    // create the svg size by reducing the margin
+    const width = viewSize.width - margin.left - margin.right;
+    const height = viewSize.height - margin.top - margin.bottom;
+    const viewContainer = d3.select("#view-container")
+    matSvg = viewContainer.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    ;
+    matSvgG = matSvg.append("g")
+        .attr("class","matSvgG")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    ;
+    
+    function removeMatrix(){
+        matSvgG.selectAll('*').remove();
+    }
+
+    function renderMatrix(genData) {
+        // add d3 code here
+        // create the backgroud rectangle with the size of the grid
+
+        const cellG = matSvgG.selectAll(".cellG")
+            // selectAll() returns all elements in the group matSvgG with the class .cellG (empty the first time)
+            // bind the data with genData and indexes
+            // create groups <g> to add square in each cell of the grid
+            // apply translate transformation to define the right position of each cell
+        ;
+
+        // render rect as child of each element "g"
+
+        // Scintillating Grid: render circles in corners 
+    }
+
+    renderMatrix(genData)
+
+</script>
