@@ -33,6 +33,18 @@
         nbCols=val;
     }
 
+    function handleOnClickCell(cellData){
+        genData=genData.map(item=>{
+            if (item.index===cellData.index){
+                return {...item,selected:!cellData.selected};
+            }else{
+                return {...item,selected:false};
+            }
+        })
+        removeMatrix();
+        renderMatrix(genData);
+    }
+
     const viewSize = {width: 1400, height: 750};
     const margin = {top: 100, right: 5, bottom: 5, left: 100};
     let matSvg;
@@ -80,49 +92,50 @@
             .range(colorScheme)
         ;
 
-        function handleOnClickCell(cellData){
-            genData=genData.map(item=>{
-                if (item.index===cellData.index){
-                    return {...item,selected:!cellData.selected};
-                }else{
-                    return {...item,selected:false};
-                }
-            })
-            removeMatrix();
-            renderMatrix(genData);
+        function updateMatrix(update){
+            // all data items matching with the previous data binding
+            update.attr("transform",(cellData)=>{
+                return "translate("+(cellData.colPos*cellSize)+","+(cellData.rowPos*cellSize)+")"
+            });
+            const circleSelection = update.select(".CellCircle")
+                .attr("r",(cellData)=>cellSizeScale(cellData.nbProductSold))
+                .attr("fill",(cellData) =>{
+                    const color = cellColorScale(cellData.salesGrowth);
+                    return color;
+                })
+                .attr("stroke-width", (cellData)=>cellData.selected?2:0);
+            ;
         }
 
         const cellG = matSvgG.selectAll(".cellG")
             // selectAll returns all elements in the group matSvgG with the class .cellG (empty the first time)
             // bind the data with genData and indexes
-            .data(genData,(cell)=>cell.index)
-            .enter()
-            // create groups <g> to add square in each cell of the grid
-            .append("g")
-            .attr("class","cellG")
-            // apply translate transformation to define the right position of each cell
-            .attr("transform",(cellG)=>{
-                return "translate("+(cellG.colPos*(cellSize+cellMargin)+cellMargin)+","+(cellG.rowPos*(cellSize+cellMargin)+cellMargin)+")"
-            })
-            .on("click", (event,cellData)=>{
-                handleOnClickCell(cellData);
-            })
-        ;
-
-        // render a circle as child of each element "g"
-        cellG.append("circle")
-            .attr("class","cellCircle")
-            .attr("r", (cellData)=>{return cellSizeScale(cellData.nbProductSold)})
-            .attr("cx", radiusMax)
-            .attr("cy", radiusMax)
-            .attr("fill", (cellData) =>{
-                const color = cellColorScale(cellData.salesGrowth);
-                return color;
-            })
-            .attr("stroke", "black")
-            .attr("stroke-width", (cellData)=>cellData.selected?3:0)
-        ;
-
+            .data(genData,(cellData)=>cellData.index)
+            .join(
+              enter=>{
+                  // all data items to add:
+                  // didn't exist in the previous data binding but exist now in the new array
+                  const cellG = enter.append("g")
+                      .attr("class","cellG")
+                      .on("click", (event,cellData)=>{
+                          handleOnClickCell(cellData);
+                      })
+                  ;
+                  // render circle as child of each element "g"
+                  cellG.append("circle")
+                      .attr("class","CellCircle")
+                      .attr("cx",radiusMax)
+                      .attr("cy",radiusMax)
+                      .attr("stroke", "black")
+                  ;
+                  updateMatrix(cellG);
+              },
+              update=>{updateMatrix(update)},
+              exit=>{
+                  // all data items that don't exist anymore
+                  exit.remove();
+              }
+            ); // end join()
     }
 
     renderMatrix(genData)
