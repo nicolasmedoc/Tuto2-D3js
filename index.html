@@ -23,7 +23,6 @@
     let genData = genGridData(nbRows, nbCols);
     function handleOnClickGenerate(){
         genData = genGridData(nbRows,nbCols);
-        removeMatrix();
         renderMatrix(genData);
     }
     function handleOnChangeNbRows(val){
@@ -44,6 +43,7 @@
     let matSvgG;
     const cellSize = 30;
     const cellMargin = 5;
+    const transitionDuration = 2000;
 
     // create the svg size by reducing the margin size
     const width = viewSize.width - margin.left - margin.right;
@@ -100,10 +100,15 @@
 
         function updateMatrix(update){
             // all data items matching with the previous data binding
-            update.attr("transform",(cellData)=>{
-                return "translate("+(cellData.colPos*cellSize)+","+(cellData.rowPos*cellSize)+")"
-            });
+            update.transition()
+                .duration(transitionDuration)
+                .attr("transform",(cellData)=>{
+                    return "translate("+(cellData.colPos*cellSize)+","+(cellData.rowPos*cellSize)+")"
+                })
+            ;
             const circleSelection = update.select(".CellCircle")
+                .transition()
+                .duration(transitionDuration)
                 .attr("r",(cellData)=>cellSizeScale(cellData.nbProductSold))
                 .attr("fill",(cellData) =>{
                     const color = cellColorScale(cellData.salesGrowth);
@@ -138,8 +143,13 @@
               },
               update=>{updateMatrix(update)},
               exit=>{
-                  // all data items that don't exist anymore
-                  exit.remove();
+                    // all data items that don't exist anymore
+                    exit
+                    .transition()
+                    .duration(transitionDuration)
+                    .attr("transform", "translate("+width+","+height+")")
+                    .remove()
+                ;
               }
             ); // end join()
     }
