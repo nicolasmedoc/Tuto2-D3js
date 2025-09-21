@@ -38,10 +38,9 @@
             if (item.index===cellData.index){
                 return {...item,selected:!cellData.selected};
             }else{
-                return {...item,selected:false};
+                return item;
             }
         })
-        removeMatrix();
         renderMatrix(genData);
     }
 
