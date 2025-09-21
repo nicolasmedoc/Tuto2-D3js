@@ -71,9 +71,22 @@
         ;
 
         // build the size scale
+        const radiusMin = 2;
         const radiusMax = cellSize / 2;
+        const minNbProductSold = 0;
+        // const minNbProductSold = d3.min(genData.map(cellData=>cellData.nbProductSold));
+        const maxNbProductSold = d3.max(genData.map(cellData=>cellData.nbProductSold));
+        const cellSizeScale = d3.scaleLinear()
+            .domain([minNbProductSold, maxNbProductSold])
+            .range([radiusMin, radiusMax-1])
+        ;
 
         // build the color scale
+        const colorScheme = d3.schemeRdYlBu[11];
+        const cellColorScale = d3.scaleQuantile()
+            .domain(genData.map(cellData=>cellData.salesGrowth))
+            .range(colorScheme)
+        ;
 
         const cellG = matSvgG.selectAll(".cellG")
             // selectAll returns all elements in the group matSvgG with the class .cellG (empty the first time)
@@ -92,15 +105,15 @@
         // render a circle as child of each element "g"
         cellG.append("circle")
             .attr("class","cellCircle")
-            .attr("r",radiusMax)
+            .attr("r", (cellData)=>{return cellSizeScale(cellData.nbProductSold)})
             .attr("cx", radiusMax)
             .attr("cy", radiusMax)
-            .attr("fill",(cell)=>{
-                    return "gray";
+            .attr("fill", (cellData) =>{
+                const color = cellColorScale(cellData.salesGrowth);
+                return color;
             })
         ;
 
-        // Scintillating Grid: render circles in corners 
     }
 
     renderMatrix(genData)
