@@ -98,6 +98,13 @@
             .range(colorScheme)
         ;
 
+        const rowLabels = [];
+        const colLabels = [];
+        genData.forEach((cellData)=>{
+            rowLabels[cellData.rowPos] = {label: cellData.rowLabel, id: cellData.rowPos};
+            colLabels[cellData.colPos] = {label: cellData.colLabel, id: cellData.colPos};
+        });
+
         function updateMatrix(update){
             // all data items matching with the previous data binding
             update.transition()
@@ -151,7 +158,47 @@
                     .remove()
                 ;
               }
-            ); // end join()
+            ) // end join()
+        ;
+
+        matSvgG.selectAll(".rowLabelsG")
+        .data(rowLabels,(rowLabel)=>{return rowLabel.id})
+        .join(
+            enter=>{
+                enter.append("g")
+                .attr("class","rowLabelsG")
+                .attr("transform", (cellData)=>{
+                    const gPos = (cellData.id*cellSize) + cellSize/2-1 + getDefaultFontSize()/2
+                    return "translate(0,"+gPos+")"
+                })
+                .append("text")
+                .text(rowLabel=>{return rowLabel.label})
+                .attr("text-anchor","end")
+            },
+            update=>{},
+            exit=>{
+                exit.remove()
+            }
+        )
+        matSvgG.selectAll(".colLabelsG")
+        .data(colLabels,(colLabel)=>{return colLabel.id})
+        .join(
+            enter=>{
+                enter.append("g")
+                .attr("class","colLabelsG")
+                .attr("transform", (cellData)=>{
+                    const gPos = (cellData.id*cellSize) + cellSize/2-1 + getDefaultFontSize()/2
+                    return "translate("+gPos+",0)"
+                })
+                .append("text")
+                .text(rowLabel=>{return rowLabel.label})
+                .attr("transform","rotate(-90)")
+            },
+            update=>{},
+            exit=>{
+                exit.remove()
+            }
+        )
     }
 
     renderMatrix(genData)
