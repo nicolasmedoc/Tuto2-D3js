@@ -70,7 +70,10 @@
             .attr("fill","white")
         ;
 
+        // build the size scale
         const radiusMax = cellSize / 2;
+
+        // build the color scale
 
         const cellG = matSvgG.selectAll(".cellG")
             // selectAll returns all elements in the group matSvgG with the class .cellG (empty the first time)
@@ -86,7 +89,7 @@
             })
         ;
 
-        // render rect as child of each element "g"
+        // render a circle as child of each element "g"
         cellG.append("circle")
             .attr("class","cellCircle")
             .attr("r",radiusMax)
