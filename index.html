@@ -34,15 +34,8 @@
     }
 
     function handleOnClickCell(cellData){
-        genData=genData.map(item=>{
-            if (item.index===cellData.index){
-                return {...item,selected:!cellData.selected};
-            }else{
-                return {...item,selected:false};
-            }
-        })
-        removeMatrix();
-        renderMatrix(genData);
+        const cellsToUpdate=[{...cellData, selected:!cellData.selected}]
+        updateCellHighlighting(cellsToUpdate);
     }
 
     const viewSize = {width: 1400, height: 750};
@@ -70,6 +63,19 @@
     function removeMatrix(){
         matSvgG.selectAll('*').remove();
     }
+
+    function updateCellHighlighting(cellsToUpdate){
+        matSvgG.selectAll(".cellG")
+            .data(cellsToUpdate, cellData=>cellData.index)
+            // no need to call join() because we don't need enter or exit
+            // update selection is already returned by data()
+            .select(".CellCircle")
+            .attr("stroke-width",cellData=>{
+                return cellData.selected?2:0
+            });
+        ;
+    }
+
 
     function renderMatrix(genData) {
         // add d3 code here
