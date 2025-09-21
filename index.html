@@ -93,6 +93,8 @@
         cellG.append("circle")
             .attr("class","cellCircle")
             .attr("r",radiusMax)
+            .attr("cx", radiusMax)
+            .attr("cy", radiusMax)
             .attr("fill",(cell)=>{
                     return "gray";
             })
