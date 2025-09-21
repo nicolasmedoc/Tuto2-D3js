@@ -62,14 +62,6 @@
     function renderMatrix(genData) {
         // add d3 code here
 
-        // create the backgroud rectangle with the size of the grid
-        matSvgG.append("rect")
-            .attr("class","backgroundrect")
-            .attr("width",(cellSize+cellMargin)*nbCols + cellMargin)
-            .attr("height",(cellSize+cellMargin)*nbRows + cellMargin)
-            .attr("fill","white")
-        ;
-
         // build the size scale
         const radiusMin = 2;
         const radiusMax = cellSize / 2;
@@ -88,6 +80,18 @@
             .range(colorScheme)
         ;
 
+        function handleOnClickCell(cellData){
+            genData=genData.map(item=>{
+                if (item.index===cellData.index){
+                    return {...item,selected:!cellData.selected};
+                }else{
+                    return {...item,selected:false};
+                }
+            })
+            removeMatrix();
+            renderMatrix(genData);
+        }
+
         const cellG = matSvgG.selectAll(".cellG")
             // selectAll returns all elements in the group matSvgG with the class .cellG (empty the first time)
             // bind the data with genData and indexes
@@ -99,6 +103,9 @@
             // apply translate transformation to define the right position of each cell
             .attr("transform",(cellG)=>{
                 return "translate("+(cellG.colPos*(cellSize+cellMargin)+cellMargin)+","+(cellG.rowPos*(cellSize+cellMargin)+cellMargin)+")"
+            })
+            .on("click", (event,cellData)=>{
+                handleOnClickCell(cellData);
             })
         ;
 
@@ -112,6 +119,8 @@
                 const color = cellColorScale(cellData.salesGrowth);
                 return color;
             })
+            .attr("stroke", "black")
+            .attr("stroke-width", (cellData)=>cellData.selected?3:0)
         ;
 
     }
