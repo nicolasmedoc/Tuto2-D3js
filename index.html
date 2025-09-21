@@ -37,12 +37,14 @@
     const margin = {top: 100, right: 5, bottom: 5, left: 100};
     let matSvg;
     let matSvgG;
-    const cellSize = 50;
-    const cellMargin = 10;
+    const cellSize = 30;
+    const cellMargin = 5;
 
-    // create the svg size by reducing the margin
+    // create the svg size by reducing the margin size
     const width = viewSize.width - margin.left - margin.right;
     const height = viewSize.height - margin.top - margin.bottom;
+
+    // get the div with id="view-container"
     const viewContainer = d3.select("#view-container")
     matSvg = viewContainer.append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -59,16 +61,39 @@
 
     function renderMatrix(genData) {
         // add d3 code here
+
         // create the backgroud rectangle with the size of the grid
+        matSvgG.append("rect")
+            .attr("class","backgroundrect")
+            .attr("width",(cellSize+cellMargin)*nbCols + cellMargin)
+            .attr("height",(cellSize+cellMargin)*nbRows + cellMargin)
+            .attr("fill","white")
+        ;
+
+        const radiusMax = cellSize / 2;
 
         const cellG = matSvgG.selectAll(".cellG")
-            // selectAll() returns all elements in the group matSvgG with the class .cellG (empty the first time)
+            // selectAll returns all elements in the group matSvgG with the class .cellG (empty the first time)
             // bind the data with genData and indexes
+            .data(genData,(cell)=>cell.index)
+            .enter()
             // create groups <g> to add square in each cell of the grid
+            .append("g")
+            .attr("class","cellG")
             // apply translate transformation to define the right position of each cell
+            .attr("transform",(cellG)=>{
+                return "translate("+(cellG.colPos*(cellSize+cellMargin)+cellMargin)+","+(cellG.rowPos*(cellSize+cellMargin)+cellMargin)+")"
+            })
         ;
 
         // render rect as child of each element "g"
+        cellG.append("circle")
+            .attr("class","cellCircle")
+            .attr("r",radiusMax)
+            .attr("fill",(cell)=>{
+                    return "gray";
+            })
+        ;
 
         // Scintillating Grid: render circles in corners 
     }

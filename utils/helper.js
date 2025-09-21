@@ -1,9 +1,20 @@
-function generateValue(typeGen,i){
+function gaussianRandom(mean=0, stdev=1) {
+    const u = 1 - Math.random(); // Converting [0,1) to (0,1]
+    const v = Math.random();
+    const z = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+    // Transform to the desired mean and standard deviation:
+    return z * stdev + mean;
+}
+function generateValue(typeGen,i,mean,stddev){
     let effectiveValue=null;
     if (typeGen==="random"){
         effectiveValue=Math.random();
+        const randomVal = Math.floor(Math.random()*10)
+        if (randomVal % 2 == 0){
+            effectiveValue = - effectiveValue
+        }
     }else if (typeGen==="random-int"){
-            effectiveValue=Math.floor(Math.random()*100000);
+            effectiveValue=Math.floor(gaussianRandom(70000,10000));
     }else if(typeGen==="increment"){
         effectiveValue=i;
     }
