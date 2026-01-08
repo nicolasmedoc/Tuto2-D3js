@@ -62,14 +62,6 @@
     function renderMatrix(genData) {
         // add d3 code here
 
-        // create the backgroud rectangle with the size of the grid
-        matSvgG.append("rect")
-            .attr("class","backgroundrect")
-            .attr("width",(cellSize+cellMargin)*nbCols + cellMargin)
-            .attr("height",(cellSize+cellMargin)*nbRows + cellMargin)
-            .attr("fill","white")
-        ;
-
         // build the size scale
         const radiusMax = cellSize / 2;
 
